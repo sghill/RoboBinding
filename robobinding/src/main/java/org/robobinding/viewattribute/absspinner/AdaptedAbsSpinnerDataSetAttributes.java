@@ -15,12 +15,15 @@
  */
 package org.robobinding.viewattribute.absspinner;
 
+import static org.robobinding.attribute.ChildAttributeResolvers.predefinedMappingsAttributeResolver;
+import static org.robobinding.attribute.ChildAttributeResolvers.propertyAttributeResolver;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.robobinding.attribute.ChildAttributeResolverMappings;
 import org.robobinding.viewattribute.adapterview.AbstractAdaptedDataSetAttributes;
 import org.robobinding.viewattribute.adapterview.DropdownLayoutAttribute;
 import org.robobinding.viewattribute.adapterview.DropdownMappingAttribute;
-import static org.robobinding.attribute.ChildAttributeResolvers.*;
+import org.robobinding.viewattribute.adapterview.RowLayoutAttributeFactory;
 
 import android.widget.AbsSpinner;
 
@@ -55,7 +58,7 @@ public class AdaptedAbsSpinnerDataSetAttributes extends AbstractAdaptedDataSetAt
 		super.setupChildAttributeBindings(binding);
 		
 		if (groupAttributes.hasAttribute(DROPDOWN_LAYOUT))
-			binding.add(DROPDOWN_LAYOUT, new DropdownLayoutAttribute(view, dataSetAdapter));
+			binding.add(DROPDOWN_LAYOUT, new DropdownLayoutAttribute(new RowLayoutAttributeFactory(view, dataSetAdapter)));
 		
 		if (groupAttributes.hasAttribute(DROPDOWN_MAPPING))
 			binding.add(DROPDOWN_MAPPING, new DropdownMappingAttribute(dataSetAdapter));

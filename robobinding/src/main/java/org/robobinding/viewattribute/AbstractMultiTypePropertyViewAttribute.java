@@ -17,7 +17,6 @@ package org.robobinding.viewattribute;
 
 import org.robobinding.BindingContext;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.viewattribute.view.ViewListeners;
 import org.robobinding.viewattribute.view.ViewListenersAware;
 
@@ -63,11 +62,22 @@ public abstract class AbstractMultiTypePropertyViewAttribute<T extends View> imp
 	
 	private void performBind(BindingContext bindingContext)
 	{
-		AbstractPropertyViewAttribute<T, ?> propertyViewAttribute = lookupPropertyViewAttribute(bindingContext.getPresentationModelAdapter());
+		AbstractPropertyViewAttribute<T, ?> propertyViewAttribute = lookupPropertyViewAttribute(bindingContext);
 		propertyViewAttribute.setView(view);
 		propertyViewAttribute.setAttribute(attribute);
 		setViewListenersIfRequired(propertyViewAttribute, view);
 		propertyViewAttribute.bindTo(bindingContext);
+	}
+	
+	private AbstractPropertyViewAttribute<T, ?> lookupPropertyViewAttribute(BindingContext bindingContext)
+	{
+		Class<?> propertyType = bindingContext.getPropertyType(attribute.getPropertyName());
+		AbstractPropertyViewAttribute<T, ?> propertyViewAttribute = createPropertyViewAttribute(propertyType);
+		
+		if (propertyViewAttribute == null)
+			throw new RuntimeException("Could not find a suitable attribute in " + getClass().getName() + " for property type: " + propertyType);
+		
+		return propertyViewAttribute;
 	}
 
 	private void setViewListenersIfRequired(ViewAttribute viewAttribute, View view)
@@ -82,15 +92,4 @@ public abstract class AbstractMultiTypePropertyViewAttribute<T extends View> imp
 	}
 	
 	protected abstract AbstractPropertyViewAttribute<T, ?> createPropertyViewAttribute(Class<?> propertyType);
-
-	private AbstractPropertyViewAttribute<T, ?> lookupPropertyViewAttribute(PresentationModelAdapter presentationModelAdapter)
-	{
-		Class<?> propertyType = presentationModelAdapter.getPropertyType(attribute.getPropertyName());
-		AbstractPropertyViewAttribute<T, ?> propertyViewAttribute = createPropertyViewAttribute(propertyType);
-		
-		if (propertyViewAttribute == null)
-			throw new RuntimeException("Could not find a suitable attribute in " + getClass().getName() + " for property type: " + propertyType);
-		
-		return propertyViewAttribute;
-	}
 }

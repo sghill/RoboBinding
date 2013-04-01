@@ -17,7 +17,6 @@ package org.robobinding.viewattribute;
 
 import org.robobinding.BindingContext;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.property.PresentationModelPropertyChangeListener;
 import org.robobinding.property.ValueModel;
 
@@ -85,12 +84,10 @@ public abstract class AbstractPropertyViewAttribute<ViewType extends View, Prope
 	
 	abstract class AbstractPropertyBinder
 	{
-		private final BindingContext bindingContext;
-		protected final PresentationModelAdapter presentationModelAdapter;
+		protected final BindingContext bindingContext;
 		public AbstractPropertyBinder(BindingContext bindingContext)
 		{
 			this.bindingContext = bindingContext;
-			this.presentationModelAdapter = bindingContext.getPresentationModelAdapter();
 		}
 		
 		protected void initializeViewIfRequired(ValueModel<PropertyType> valueModel)
@@ -113,7 +110,7 @@ public abstract class AbstractPropertyViewAttribute<ViewType extends View, Prope
 		@Override
 		public void performBind()
 		{
-			final ValueModel<PropertyType> valueModel = presentationModelAdapter.getReadOnlyPropertyValueModel(attribute.getPropertyName());
+			final ValueModel<PropertyType> valueModel = bindingContext.getReadOnlyPropertyValueModel(attribute.getPropertyName());
 			initializeViewIfRequired(valueModel);
 			valueModel.addPropertyChangeListener(new PresentationModelPropertyChangeListener(){
 				@Override
@@ -133,9 +130,9 @@ public abstract class AbstractPropertyViewAttribute<ViewType extends View, Prope
 			super(bindingContext);
 		}
 		@Override
-		public void performBind()
+		public void performBind() 
 		{
-			ValueModel<PropertyType> valueModel = presentationModelAdapter.getPropertyValueModel(attribute.getPropertyName());
+			ValueModel<PropertyType> valueModel = bindingContext.getPropertyValueModel(attribute.getPropertyName());
 			valueModel = new PropertyValueModelWrapper(valueModel);
 			initializeViewIfRequired(valueModel);
 			observeChangesOnTheValueModel(valueModel);

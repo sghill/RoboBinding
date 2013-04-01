@@ -17,7 +17,6 @@ package org.robobinding.viewattribute.adapterview;
 
 import org.robobinding.BindingContext;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.property.DataSetValueModel;
 import org.robobinding.viewattribute.ChildViewAttribute;
 
@@ -47,8 +46,7 @@ public class SourceAttribute implements ChildViewAttribute<ValueModelAttribute>
 	@Override
 	public void bindTo(BindingContext bindingContext)
 	{
-		PresentationModelAdapter presentationModelAdapter = bindingContext.getPresentationModelAdapter();
-		DataSetValueModel dataSetValueModel = presentationModelAdapter.getDataSetPropertyValueModel(attribute.getPropertyName());
+		DataSetValueModel dataSetValueModel = bindingContext.getDataSetPropertyValueModel(attribute.getPropertyName());
 		dataSetAdapter.setValueModel(dataSetValueModel);
 	}
 }

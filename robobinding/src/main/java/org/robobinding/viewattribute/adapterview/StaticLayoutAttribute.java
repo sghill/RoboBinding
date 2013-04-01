@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Cheng Wei, Robert Taylor
+ * Copyright 2013 Cheng Wei, Robert Taylor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 package org.robobinding.viewattribute.adapterview;
 
 import org.robobinding.BindingContext;
-import org.robobinding.attribute.AbstractPropertyAttribute;
-import org.robobinding.viewattribute.ChildViewAttribute;
+import org.robobinding.attribute.StaticResourceAttribute;
 import org.robobinding.viewattribute.ViewAttribute;
-
 
 /**
  * 
@@ -27,30 +25,21 @@ import org.robobinding.viewattribute.ViewAttribute;
  * @version $Revision: 1.0 $
  * @author Robert Taylor
  */
-public class ItemLayoutAttribute implements ChildViewAttribute<AbstractPropertyAttribute>
+class StaticLayoutAttribute implements ViewAttribute
 {
-	protected RowLayoutAttributeFactory layoutAttributeFactory;
-	private ViewAttribute layoutAttribute;
-	
-	public ItemLayoutAttribute(RowLayoutAttributeFactory layoutAttributeFactory)
+	private StaticResourceAttribute attributeValue;
+	private DataSetAdapterRowLayoutUpdater dataSetAdapterRowLayoutUpdater;
+
+	public StaticLayoutAttribute(StaticResourceAttribute attributeValue, DataSetAdapterRowLayoutUpdater dataSetAdapterRowLayoutUpdater)
 	{
-		this.layoutAttributeFactory = layoutAttributeFactory;
+		this.attributeValue = attributeValue;
+		this.dataSetAdapterRowLayoutUpdater = dataSetAdapterRowLayoutUpdater;
 	}
 
 	@Override
-	public void setAttribute(AbstractPropertyAttribute attribute)
-	{
-		layoutAttribute = createLayoutAttribute(attribute);
-	}
-	
-	protected ViewAttribute createLayoutAttribute(AbstractPropertyAttribute attribute) 
-	{
-		return layoutAttributeFactory.createItemLayoutAttribute(attribute);
-	}
-	
-	@Override
 	public void bindTo(BindingContext bindingContext)
 	{
-		layoutAttribute.bindTo(bindingContext);		
+		int itemLayoutId = attributeValue.getResourceId(bindingContext.getContext());
+		dataSetAdapterRowLayoutUpdater.updateRowLayout(itemLayoutId);
 	}
 }

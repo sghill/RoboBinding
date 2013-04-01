@@ -16,6 +16,7 @@
 package org.robobinding.viewattribute;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -24,7 +25,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robobinding.BindingContext;
-import org.robobinding.MockBindingContext;
 import org.robobinding.attribute.PendingGroupAttributes;
 import org.robobinding.viewattribute.AbstractGroupedViewAttribute.ChildAttributeBindings;
 
@@ -111,7 +111,7 @@ public abstract class AbstractGroupedViewAttributeTest<T extends AbstractGrouped
 	{
 		AttributeGroupBindingException bindingErrors = new AttributeGroupBindingException();
 		
-		BindingContext bindingContext = MockBindingContext.create();
+		BindingContext bindingContext = mock(BindingContext.class);
 		attributeUnderTest.preBind(bindingContext);
 		
 		ChildAttributeBindings binding = attributeUnderTest.new ChildAttributeBindings(bindingContext, bindingErrors);

@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.robobinding.BindingContext;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 
 public abstract class PropertyViewAttributeContractTest<T extends PropertyViewAttribute<?>>
 {
@@ -47,9 +46,7 @@ public abstract class PropertyViewAttributeContractTest<T extends PropertyViewAt
 	private BindingContext throwsExceptionDuringBinding()
 	{
 		BindingContext bindingContext = mock(BindingContext.class);
-		PresentationModelAdapter presentationModelAdapter = mock(PresentationModelAdapter.class);
-		when(bindingContext.getPresentationModelAdapter()).thenReturn(presentationModelAdapter);
-		doThrow(new RuntimeException()).when(presentationModelAdapter).getPropertyType(anyString());
+		doThrow(new RuntimeException()).when(bindingContext).getPropertyType(anyString());
 		return bindingContext;
 	}
 }

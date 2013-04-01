@@ -16,8 +16,8 @@
 package org.robobinding.attribute;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.robobinding.BindingContext;
 import org.robobinding.function.Function;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 
 /**
  *
@@ -48,16 +48,14 @@ public class CommandAttribute extends AbstractAttribute
 		return commandName.contains("{") || commandName.contains("}");
 	}
 	
-	public Command findCommand(PresentationModelAdapter presentationModelAdapter, Class<?>... parameterTypes)
+	public Command findCommand(BindingContext bindingContext, Class<?>... parameterTypes)
 	{
-		Function function = presentationModelAdapter.findFunction(commandName, parameterTypes);
+		Function function = bindingContext.getFunction(commandName, parameterTypes);
+		
 		if(function != null)
-		{
 			return ArrayUtils.isNotEmpty(parameterTypes)?new Command(function, true):new Command(function, false);
-		}else
-		{
-			return null;
-		}
+			
+		return null;
 	}
 
 	public String getCommandName()

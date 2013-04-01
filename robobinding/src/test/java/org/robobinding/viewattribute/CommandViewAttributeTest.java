@@ -22,15 +22,15 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.robobinding.MockBindingContext;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.robobinding.BindingContext;
 import org.robobinding.attribute.Command;
 import org.robobinding.attribute.CommandAttribute;
 import org.robobinding.function.Function;
-import org.robobinding.function.MockFunction;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.viewattribute.adapterview.ItemClickEvent;
 
-import android.content.Context;
 import android.view.View;
 
 /**
@@ -39,48 +39,41 @@ import android.view.View;
  * @version $Revision: 1.0 $
  * @author Robert Taylor
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class CommandViewAttributeTest
 {
 	private static final String FUNCTION_NAME = "functionName";
 	
-	private Context context = null;
-	private Function noArgsFunction = new MockFunction();
-	private Function preferredFunction = new MockFunction();
-	
-	private DummyCommandViewAttribute commandViewAttribute;
-	private PresentationModelAdapter presentationModelAdapter;
+	@Mock Function noArgsFunction;
+	@Mock Function preferredFunction;
+	@Mock BindingContext bindingContext;
+	private CommandViewAttributeForTest commandViewAttribute;
 	
 	@Before
 	public void setUp()
 	{
-		commandViewAttribute = new DummyCommandViewAttribute();
+		commandViewAttribute = new CommandViewAttributeForTest();
 		commandViewAttribute.setView(mock(View.class));
 		commandViewAttribute.setAttribute(new CommandAttribute("name", FUNCTION_NAME));
-		presentationModelAdapter = mock(PresentationModelAdapter.class);
 	}
 	
 	@Test
 	public void givenAPresentationModelWithAMatchingNoArgsFunction_whenBinding_thenBindWithThatFunction()
 	{
-		when(presentationModelAdapter.findFunction(FUNCTION_NAME)).thenReturn(noArgsFunction);
+		when(bindingContext.getFunction(FUNCTION_NAME)).thenReturn(noArgsFunction);
 		
-		bindAttribute();
+		commandViewAttribute.bindTo(bindingContext);
 
 		assertThat(commandViewAttribute.functionBound, equalTo(noArgsFunction));
 	}
 
-	private void bindAttribute()
-	{
-		commandViewAttribute.bindTo(MockBindingContext.create(presentationModelAdapter, context));
-	}
-	
 	@Test
 	public void givenAPresentationModelWithAMatchingPreferredArgsFunction_whenBinding_thenBindWithThatFunctionAndParamsBuilder()
 	{
-		when(presentationModelAdapter.findFunction(FUNCTION_NAME)).thenReturn(noArgsFunction);
-		when(presentationModelAdapter.findFunction(FUNCTION_NAME, ItemClickEvent.class)).thenReturn(preferredFunction);
+		when(bindingContext.getFunction(FUNCTION_NAME)).thenReturn(noArgsFunction);
+		when(bindingContext.getFunction(FUNCTION_NAME, ItemClickEvent.class)).thenReturn(preferredFunction);
 		
-		bindAttribute();
+		commandViewAttribute.bindTo(bindingContext);
 		
 		assertThat(commandViewAttribute.functionBound, equalTo(preferredFunction));
 	}
@@ -88,18 +81,18 @@ public final class CommandViewAttributeTest
 	@Test (expected=RuntimeException.class)
 	public void givenAPresentationModelWithNoMatchingFunction_whenBinding_thenThrowRuntimeException()
 	{
-		bindAttribute();
+		commandViewAttribute.bindTo(bindingContext);
 	}
 	
 	@Test (expected=IllegalStateException.class)
 	public void givenAnAttributeWhosePropertiesHaveNotBeenSet_whenBinding_thenThrowException()
 	{
-		commandViewAttribute = new DummyCommandViewAttribute();
+		commandViewAttribute = new CommandViewAttributeForTest();
 		
-		bindAttribute();
+		commandViewAttribute.bindTo(bindingContext);
 	}
 	
-	public class DummyCommandViewAttribute extends AbstractCommandViewAttribute<View>
+	public class CommandViewAttributeForTest extends AbstractCommandViewAttribute<View>
 	{
 		Function functionBound;
 		

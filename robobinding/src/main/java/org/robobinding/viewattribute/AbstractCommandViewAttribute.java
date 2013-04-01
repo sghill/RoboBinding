@@ -18,7 +18,6 @@ package org.robobinding.viewattribute;
 import org.robobinding.BindingContext;
 import org.robobinding.attribute.Command;
 import org.robobinding.attribute.CommandAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 
 import android.view.View;
 
@@ -49,7 +48,7 @@ public abstract class AbstractCommandViewAttribute<T extends View> implements Vi
 		performValidate();
 		try
 		{
-			performBind(bindingContext.getPresentationModelAdapter());
+			performBind(bindingContext);
 		}catch(RuntimeException e)
 		{
 			throw new AttributeBindingException(attribute.getName(), e);
@@ -69,27 +68,27 @@ public abstract class AbstractCommandViewAttribute<T extends View> implements Vi
 		validation.addErrorIfCommandNameNotSet(attribute);
 	}
 
-	private void performBind(PresentationModelAdapter presentationModelAdapter)
+	private void performBind(BindingContext bindingContext)
 	{
-		Command command = attribute.findCommand(presentationModelAdapter, getPreferredCommandParameterType());
+		Command command = attribute.findCommand(bindingContext, getPreferredCommandParameterType());
 		if(command != null)
 		{
 			bind(command);
 		}else
 		{
-			bind(getNoArgsCommand(presentationModelAdapter));
+			bind(getNoArgsCommand(bindingContext));
 		}
 	}
 
-	private Command getNoArgsCommand(PresentationModelAdapter presentationModelAdapter)
+	private Command getNoArgsCommand(BindingContext bindingContext)
 	{
-		Command noArgsCommand = attribute.findCommand(presentationModelAdapter);
+		Command noArgsCommand = attribute.findCommand(bindingContext);
 
 		if (noArgsCommand == null)
 		{
 			String commandName = attribute.getCommandName();
 			throw new IllegalArgumentException("Could not find method " + commandName + "() or " + commandName + "(" + getAcceptedParameterTypesDescription()
-					+ ") in class " + presentationModelAdapter.getPresentationModelClass().getName());
+					+ ") in class " + bindingContext.getPresentationModelClassName());
 		}
 
 		return noArgsCommand;

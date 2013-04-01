@@ -25,13 +25,14 @@ import static org.robobinding.attribute.MockValueModelAttributeBuilder.aValueMod
 
 import org.junit.Before;
 import org.junit.Test;
-import org.robobinding.MockBindingContext;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.robobinding.BindingContext;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.property.ValueModel;
 import org.robobinding.property.ValueModelUtils;
 
-import android.content.Context;
 import android.view.View;
 
 /**
@@ -40,6 +41,7 @@ import android.view.View;
  * @version $Revision: 1.0 $
  * @author Robert Taylor
  */
+@RunWith(MockitoJUnitRunner.class)
 public final class PropertyViewAttributeTest extends PropertyViewAttributeContractTest<PropertyViewAttributeSpy>
 {
 	private static final String PROPERTY_NAME = "property_name";
@@ -49,14 +51,12 @@ public final class PropertyViewAttributeTest extends PropertyViewAttributeContra
 	private static final boolean DONT_PRE_INITIALIZE_VIEW = false;
 	private static final int A_NEW_VALUE = 5;
 	
-	private PresentationModelAdapter presentationModelAdapter;
-	private Context context;
+	@Mock BindingContext bindingContext;
 	private ValueModel<Integer> valueModel = ValueModelUtils.createInteger(-1);
 	
 	@Before
 	public void setUp()
 	{
-		presentationModelAdapter = mock(PresentationModelAdapter.class);
 		attribute.setView(mock(View.class));
 	}
 	
@@ -120,7 +120,7 @@ public final class PropertyViewAttributeTest extends PropertyViewAttributeContra
 	public void whenBindingWithoutSettingAllValues_thenShouldThrowException()
 	{
 		PropertyViewAttributeSpy propertyViewAttribute = new PropertyViewAttributeSpy();
-		propertyViewAttribute.bindTo(MockBindingContext.create(presentationModelAdapter, context));
+		propertyViewAttribute.bindTo(bindingContext);
 	}
 	
 	private void bindAttribute(boolean twoWayBinding, boolean preInitializeView)
@@ -128,11 +128,13 @@ public final class PropertyViewAttributeTest extends PropertyViewAttributeContra
 		ValueModelAttribute valueModelAttribute = aValueModelAttribute(PROPERTY_NAME, twoWayBinding);
 		
 		if (twoWayBinding)
-			when(presentationModelAdapter.<Integer>getPropertyValueModel(PROPERTY_NAME)).thenReturn(valueModel);
+			when(bindingContext.<Integer>getPropertyValueModel(PROPERTY_NAME)).thenReturn(valueModel);
 		else
-			when(presentationModelAdapter.<Integer>getReadOnlyPropertyValueModel(PROPERTY_NAME)).thenReturn(valueModel);
+			when(bindingContext.<Integer>getReadOnlyPropertyValueModel(PROPERTY_NAME)).thenReturn(valueModel);
+		
+		when(bindingContext.shouldPreInitializeViews()).thenReturn(preInitializeView);
 		
 		attribute.setAttribute(valueModelAttribute);
-		attribute.bindTo(MockBindingContext.create(presentationModelAdapter, context, preInitializeView));
+		attribute.bindTo(bindingContext);
 	}
 }

@@ -17,7 +17,6 @@ package org.robobinding.viewattribute.adapterview;
 
 import org.robobinding.BindingContext;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.viewattribute.AbstractPropertyViewAttribute;
 import org.robobinding.viewattribute.AbstractReadOnlyPropertyViewAttribute;
 import org.robobinding.viewattribute.ChildViewAttribute;
@@ -51,8 +50,7 @@ public class SubViewVisibilityAttribute implements ChildViewAttribute<ValueModel
 	@Override
 	public void bindTo(BindingContext bindingContext)
 	{
-		PresentationModelAdapter presentationModelAdapter = bindingContext.getPresentationModelAdapter();
-		Class<?> propertyType = presentationModelAdapter.getPropertyType(attribute.getPropertyName());
+		Class<?> propertyType = bindingContext.getPropertyType(attribute.getPropertyName());
 		AbstractPropertyViewAttribute<View, ?> propertyViewAttribute = createPropertyViewAttribute(propertyType);
 		propertyViewAttribute.bindTo(bindingContext);
 	}

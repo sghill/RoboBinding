@@ -16,8 +16,10 @@
 package org.robobinding;
 
 import org.robobinding.attribute.ValueModelAttribute;
+import org.robobinding.function.Function;
 import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.presentationmodel.PresentationModelAdapterImpl;
+import org.robobinding.property.DataSetValueModel;
 import org.robobinding.property.ValueModel;
 
 import android.content.Context;
@@ -47,11 +49,6 @@ public class BindingContext
 	public boolean shouldPreInitializeViews()
 	{
 		return preInitializeViews;
-	}
-
-	public PresentationModelAdapter getPresentationModelAdapter()
-	{
-		return presentationModelAdapter;
 	}
 
 	public Context getContext()
@@ -84,8 +81,37 @@ public class BindingContext
 
 	private Object getPresentationModel(ValueModelAttribute presentationModelAttributeValue)
 	{
-		PresentationModelAdapter presentationModelAdapter = getPresentationModelAdapter();
 		ValueModel<Object> valueModel = presentationModelAdapter.getReadOnlyPropertyValueModel(presentationModelAttributeValue.getPropertyName());
 		return valueModel.getValue();
+	}
+
+	public DataSetValueModel<?> getDataSetPropertyValueModel(String propertyName)
+	{
+		return presentationModelAdapter.getDataSetPropertyValueModel(propertyName);
+	}
+
+	public Class<?> getPropertyType(String propertyName)
+	{
+		return presentationModelAdapter.getPropertyType(propertyName);
+	}
+
+	public <T> ValueModel<T> getReadOnlyPropertyValueModel(String propertyName)
+	{
+		return presentationModelAdapter.getReadOnlyPropertyValueModel(propertyName);
+	}
+
+	public <T> ValueModel<T> getPropertyValueModel(String propertyName)
+	{
+		return presentationModelAdapter.getPropertyValueModel(propertyName);
+	}
+
+	public Function getFunction(String functionName, Class<?>... parameterTypes)
+	{
+		return presentationModelAdapter.findFunction(functionName, parameterTypes);
+	}
+
+	public String getPresentationModelClassName()
+	{
+		return presentationModelAdapter.getClass().getName();
 	}
 }
