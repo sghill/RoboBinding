@@ -15,7 +15,6 @@
  */
 package org.robobinding.viewattribute;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -55,136 +54,9 @@ public class ChildViewAttributesTest
 	{
 		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(aKindOfChildViewAttributes);
 
-		childViewAttributes.markSetupCompleted();
+		childViewAttributes.createInitializedChildViewAttributes();
 		
 		aKindOfChildViewAttributes.addTo(childViewAttributes);
-	}
-	
-	@Test
-	public void whenPreInitializeView_thenTheMethodOfChildPropertyViewAttributeIsCalled()
-	{
-		PropertyViewAttributeTester aPropertyViewAttribute = new PropertyViewAttributeTester();
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(aPropertyViewAttribute);
-		aPropertyViewAttribute.addTo(childViewAttributes);
-		childViewAttributes.markSetupCompleted();
-		
-		childViewAttributes.preInitializeView(mock(BindingContext.class));
-		
-		aPropertyViewAttribute.verifyNumCallsToPreInitializeView(1);
-	}
-	
-	@Test
-	public void whenBindTo_thenTheMethodInEachChildViewAttributeIsCalled()
-	{
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(childViewAttributeSamples);
-		addToChildViewAttributes(childViewAttributes, childViewAttributeSamples);
-		childViewAttributes.markSetupCompleted();
-		
-		childViewAttributes.bindTo(mock(BindingContext.class));
-		
-		childViewAttributeSamples[0].verifyNumCallsToBindTo(1);
-		childViewAttributeSamples[1].verifyNumCallsToBindTo(1);
-		childViewAttributeSamples[2].verifyNumCallsToBindTo(1);
-	}
-	
-	@Test
-	public void whenErrorsOccurDuringPreInitializeViewWithFailOnFirstBindingError_thenOnlyTheMethodInTheFirstChildViewAttributeIsCalled()
-	{
-		PropertyViewAttributeTester propertyViewAttribute1 = new PropertyViewAttributeTester();
-		propertyViewAttribute1.throwsExceptionWhenPreInitializeView();
-		
-		PropertyViewAttributeTester propertyViewAttribute2 = new PropertyViewAttributeTester();
-		
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(propertyViewAttribute1, propertyViewAttribute2);
-		propertyViewAttribute1.addTo(childViewAttributes);
-		propertyViewAttribute2.addTo(childViewAttributes);
-		childViewAttributes.failOnFirstBindingError();
-		childViewAttributes.markSetupCompleted();
-		
-		try
-		{
-			childViewAttributes.preInitializeView(mock(BindingContext.class));
-			fail("expect an attributeGroupBindingException is thrown");
-		}catch(AttributeGroupBindingException e)
-		{
-			propertyViewAttribute1.verifyNumCallsToPreInitializeView(1);
-			propertyViewAttribute2.verifyNumCallsToPreInitializeView(0);
-		}
-	}
-	
-	@Test
-	public void whenErrorsOccurDuringPreInitializeView_thenAllTheMethodInEachChildViewAttributeIsCalled()
-	{
-		PropertyViewAttributeTester propertyViewAttribute1 = new PropertyViewAttributeTester();
-		propertyViewAttribute1.throwsExceptionWhenPreInitializeView();
-		
-		PropertyViewAttributeTester propertyViewAttribute2 = new PropertyViewAttributeTester();
-		propertyViewAttribute2.throwsExceptionWhenPreInitializeView();
-		
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(propertyViewAttribute1, propertyViewAttribute2);
-		propertyViewAttribute1.addTo(childViewAttributes);
-		propertyViewAttribute2.addTo(childViewAttributes);
-		childViewAttributes.markSetupCompleted();
-		
-		try
-		{
-			childViewAttributes.preInitializeView(mock(BindingContext.class));
-			fail("expect an attributeGroupBindingException is thrown");
-		}catch(AttributeGroupBindingException e)
-		{
-			propertyViewAttribute1.verifyNumCallsToPreInitializeView(1);
-			propertyViewAttribute1.verifyNumCallsToPreInitializeView(1);
-		}
-	}
-	
-	@Test
-	public void whenErrorsOccurDuringBindToWithFailOnFirstBindingError_thenOnlyTheMethodInTheFirstChildViewAttributeIsCalled()
-	{
-		PropertyViewAttributeTester propertyViewAttribute1 = new PropertyViewAttributeTester();
-		propertyViewAttribute1.throwsExceptionWhenBindTo();
-		
-		PropertyViewAttributeTester propertyViewAttribute2 = new PropertyViewAttributeTester();
-		
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(propertyViewAttribute1, propertyViewAttribute2);
-		propertyViewAttribute1.addTo(childViewAttributes);
-		propertyViewAttribute2.addTo(childViewAttributes);
-		childViewAttributes.failOnFirstBindingError();
-		childViewAttributes.markSetupCompleted();
-		
-		try
-		{
-			childViewAttributes.bindTo(mock(BindingContext.class));
-			fail("expect an attributeGroupBindingException is thrown");
-		}catch(AttributeGroupBindingException e)
-		{
-			propertyViewAttribute1.verifyNumCallsToBindTo(1);
-			propertyViewAttribute2.verifyNumCallsToBindTo(0);
-		}
-	}
-	
-	@Test
-	public void whenErrorsOccurDuringBindTo_thenAllTheMethodInEachChildViewAttributeIsCalled()
-	{
-		PropertyViewAttributeTester propertyViewAttribute1 = new PropertyViewAttributeTester();
-		propertyViewAttribute1.throwsExceptionWhenBindTo();
-		
-		PropertyViewAttributeTester propertyViewAttribute2 = new PropertyViewAttributeTester();
-		propertyViewAttribute2.throwsExceptionWhenBindTo();
-		
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(propertyViewAttribute1, propertyViewAttribute2);
-		propertyViewAttribute1.addTo(childViewAttributes);
-		propertyViewAttribute2.addTo(childViewAttributes);
-		childViewAttributes.markSetupCompleted();
-		
-		try
-		{
-			childViewAttributes.bindTo(mock(BindingContext.class));
-			fail("expect an attributeGroupBindingException is thrown");
-		}catch(AttributeGroupBindingException e)
-		{
-			propertyViewAttribute1.verifyNumCallsToBindTo(1);
-			propertyViewAttribute2.verifyNumCallsToBindTo(1);
-		}
 	}
 	
 	private static int childViewAttributeCounter = 0;

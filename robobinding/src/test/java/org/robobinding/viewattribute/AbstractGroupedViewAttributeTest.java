@@ -25,9 +25,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robobinding.BindingContext;
 import org.robobinding.MockBindingContext;
-import org.robobinding.attribute.EnumAttribute;
-import org.robobinding.attribute.StaticResourceAttribute;
-import org.robobinding.attribute.ValueModelAttribute;
 
 import android.app.Activity;
 import android.content.Context;
@@ -201,46 +198,46 @@ public abstract class AbstractGroupedViewAttributeTest<T extends AbstractGrouped
 		}
 
 
-		@Override
-		public void preInitializeView(BindingContext bindingContext)
-		{
-			forwarding.preInitializeView(bindingContext);
-		}
-
-		@Override
-		public void bindTo(BindingContext bindingContext)
-		{
-			forwarding.bindTo(bindingContext);
-		}
-
-		@Override
-		public void failOnFirstBindingError()
-		{
-			forwarding.failOnFirstBindingError();
-		}
-
-		@Override
-		public boolean hasAttribute(String attributeName)
-		{
-			return forwarding.hasAttribute(attributeName);
-		}
-
-		@Override
-		public ValueModelAttribute valueModelAttributeFor(String attributeName)
-		{
-			return forwarding.valueModelAttributeFor(attributeName);
-		}
-
-		@Override
-		public StaticResourceAttribute staticResourceAttributeFor(String attributeName)
-		{
-			return forwarding.staticResourceAttributeFor(attributeName);
-		}
-
-		@Override
-		public <E extends Enum<E>> EnumAttribute<E> enumAttributeFor(String attributeName)
-		{
-			return forwarding.enumAttributeFor(attributeName);
-		}
+//		@Override
+//		public void preInitializeView(BindingContext bindingContext)
+//		{
+//			forwarding.preInitializeView(bindingContext);
+//		}
+//
+//		@Override
+//		public void bindTo(BindingContext bindingContext)
+//		{
+//			forwarding.bindTo(bindingContext);
+//		}
+//
+//		@Override
+//		public void failOnFirstBindingError()
+//		{
+//			forwarding.failOnFirstBindingError();
+//		}
+//
+//		@Override
+//		public boolean hasAttribute(String attributeName)
+//		{
+//			return forwarding.hasAttribute(attributeName);
+//		}
+//
+//		@Override
+//		public ValueModelAttribute valueModelAttributeFor(String attributeName)
+//		{
+//			return forwarding.valueModelAttributeFor(attributeName);
+//		}
+//
+//		@Override
+//		public StaticResourceAttribute staticResourceAttributeFor(String attributeName)
+//		{
+//			return forwarding.staticResourceAttributeFor(attributeName);
+//		}
+//
+//		@Override
+//		public <E extends Enum<E>> EnumAttribute<E> enumAttributeFor(String attributeName)
+//		{
+//			return forwarding.enumAttributeFor(attributeName);
+//		}
 	}
 }
