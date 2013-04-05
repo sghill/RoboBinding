@@ -18,7 +18,6 @@ package org.robobinding.viewattribute.adapterview;
 import org.robobinding.BindingContext;
 import org.robobinding.ViewBinder;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.property.ValueModel;
 
 import android.view.View;
@@ -46,8 +45,7 @@ public class SubViewCreator
 
 	private Object getPresentationModel(ValueModelAttribute presentationModelAttributeValue, BindingContext bindingContext)
 	{
-		PresentationModelAdapter presentationModelAdapter = bindingContext.getPresentationModelAdapter();
-		ValueModel<Object> valueModel = presentationModelAdapter.getReadOnlyPropertyValueModel(presentationModelAttributeValue.getPropertyName());
+		ValueModel<Object> valueModel = bindingContext.getReadOnlyPropertyValueModel(presentationModelAttributeValue.getPropertyName());
 		return valueModel.getValue();
 	}
 }

@@ -55,9 +55,9 @@ public abstract class AbstractMultiTypePropertyViewAttribute<T extends View> imp
 		}
 	}
 	
-	private void initializePropertyViewAttribute(BindingContext bindingContext)
+	private void initializePropertyViewAttribute(PresentationModelAdapter presentationModelAdapter)
 	{
-		propertyViewAttribute = lookupPropertyViewAttribute(bindingContext.getPresentationModelAdapter());
+		propertyViewAttribute = lookupPropertyViewAttribute(presentationModelAdapter);
 		viewListenersInjector.injectIfRequired(propertyViewAttribute, view);
 	}
 

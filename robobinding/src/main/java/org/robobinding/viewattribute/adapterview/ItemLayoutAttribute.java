@@ -48,8 +48,10 @@ public class ItemLayoutAttribute implements ChildViewAttributeWithAttribute<Abst
 	{
 		AbstractPropertyAttribute propertyAttribute = attribute;
 		if (propertyAttribute.isStaticResource())
-			layoutAttribute = new StaticLayoutAttribute(propertyAttribute.asStaticResourceAttribute());
-		else
+		{
+			StaticLayoutAttribute staticLayoutAttribute = new StaticLayoutAttribute(propertyAttribute.asStaticResourceAttribute());
+			layoutAttribute = staticLayoutAttribute;
+		}else
 		{
 			DynamicLayoutAttribute dynamicLayoutAttribute = new DynamicLayoutAttribute();
 			dynamicLayoutAttribute.initialize(
@@ -100,7 +102,7 @@ public class ItemLayoutAttribute implements ChildViewAttributeWithAttribute<Abst
 			int itemLayoutId = attributeValue.getResourceId(bindingContext.getContext());
 			updateLayoutId(itemLayoutId);
 		}
-
+		
 		@Override
 		public void preInitializeView(BindingContext bindingContext)
 		{

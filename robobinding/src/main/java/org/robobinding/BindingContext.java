@@ -15,8 +15,11 @@
  */
 package org.robobinding;
 
+import org.robobinding.function.Function;
 import org.robobinding.presentationmodel.PresentationModelAdapter;
 import org.robobinding.presentationmodel.PresentationModelAdapterImpl;
+import org.robobinding.property.DataSetValueModel;
+import org.robobinding.property.ValueModel;
 
 import android.content.Context;
 
@@ -26,7 +29,7 @@ import android.content.Context;
  * @version $Revision: 1.0 $
  * @author Cheng Wei
  */
-public class BindingContext
+public class BindingContext implements PresentationModelAdapter
 {
 	private final BinderImplementorFactory factory;
 	private final Context context;
@@ -39,11 +42,6 @@ public class BindingContext
 		this.context = context;
 		this.presentationModelAdapter = new PresentationModelAdapterImpl(presentationModel);
 		this.preInitializeViews = preInitializeViews;
-	}
-
-	public PresentationModelAdapter getPresentationModelAdapter()
-	{
-		return presentationModelAdapter;
 	}
 
 	public Context getContext()
@@ -64,5 +62,41 @@ public class BindingContext
 	public boolean shouldPreInitializeViews()
 	{
 		return preInitializeViews;
+	}
+
+	@Override
+	public Class<?> getPropertyType(String propertyName)
+	{
+		return presentationModelAdapter.getPropertyType(propertyName);
+	}
+
+	@Override
+	public <T> ValueModel<T> getReadOnlyPropertyValueModel(String propertyName)
+	{
+		return presentationModelAdapter.getReadOnlyPropertyValueModel(propertyName);
+	}
+
+	@Override
+	public <T> ValueModel<T> getPropertyValueModel(String propertyName)
+	{
+		return presentationModelAdapter.getPropertyValueModel(propertyName);
+	}
+
+	@Override
+	public DataSetValueModel<?> getDataSetPropertyValueModel(String propertyName)
+	{
+		return presentationModelAdapter.getDataSetPropertyValueModel(propertyName);
+	}
+
+	@Override
+	public Function findFunction(String functionName, Class<?>... parameterTypes)
+	{
+		return presentationModelAdapter.findFunction(functionName, parameterTypes);
+	}
+
+	@Override
+	public String getPresentationModelClassName()
+	{
+		return presentationModelAdapter.getPresentationModelClassName();
 	}
 }
