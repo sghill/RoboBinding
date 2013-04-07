@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Cheng Wei, Robert Taylor
+ * Copyright 2013 Cheng Wei, Robert Taylor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package org.robobinding.viewattribute;
 
-import org.robobinding.viewattribute.impl.BindingAttributeMappingsImpl;
-import org.robobinding.viewattribute.impl.ViewAttributeInitializerWrapper;
+import static org.robobinding.viewattribute.InitializedChildViewAttributes.withFailOnFirstError;
+import static org.robobinding.viewattribute.InitializedChildViewAttributes.withReportAllErrors;
 
-import android.view.View;
+import java.util.Map;
 
 /**
  *
@@ -26,7 +26,12 @@ import android.view.View;
  * @version $Revision: 1.0 $
  * @author Robert Taylor
  */
-public interface BindingAttributeProvider<T extends View>
+class InitializedChildViewAttributesFactory
 {
-	BindingAttributeMappingsImpl<T> createBindingAttributeMappings(ViewAttributeInitializerWrapper viewAttributeInitializer);
+
+	InitializedChildViewAttributes create(Map<String, ViewAttribute> childAttributeMap, boolean failOnFirstBindingError)
+	{
+		return failOnFirstBindingError ? withFailOnFirstError(childAttributeMap) : withReportAllErrors(childAttributeMap);
+	}
+
 }

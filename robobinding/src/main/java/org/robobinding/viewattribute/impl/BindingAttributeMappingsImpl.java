@@ -41,14 +41,14 @@ import com.google.common.collect.Maps;
  */
 public class BindingAttributeMappingsImpl<T extends View> implements BindingAttributeMappings<T>
 {
-	private final ViewAttributeInitializer viewAttributeInitializer;
+	private final ViewAttributeInitializerWrapper viewAttributeInitializer;
 	private final PropertyAttributeParser propertyAttributeValueParser;
 
 	private final Map<String, ViewAttributeFactory<? extends PropertyViewAttribute<? extends View>>> propertyViewAttributeMappings;
 	private final Map<String, ViewAttributeFactory<? extends AbstractCommandViewAttribute<? extends View>>> commandViewAttributeMappings;
 	private final Map<String[], ViewAttributeFactory<? extends AbstractGroupedViewAttribute<? extends View>>> groupedViewAttributeMappings;
 	
-	public BindingAttributeMappingsImpl(ViewAttributeInitializer viewAttributeInitializer)
+	public BindingAttributeMappingsImpl(ViewAttributeInitializerWrapper viewAttributeInitializer)
 	{
 		this.viewAttributeInitializer = viewAttributeInitializer;
 		propertyAttributeValueParser = new PropertyAttributeParser();

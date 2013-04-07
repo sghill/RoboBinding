@@ -19,10 +19,9 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import java.util.Map;
 
-import org.robobinding.BindingContext;
 import org.robobinding.attribute.AbstractAttribute;
 import org.robobinding.attribute.EnumAttribute;
-import org.robobinding.attribute.GroupAttributes;
+import org.robobinding.attribute.ResolvedGroupAttributes;
 import org.robobinding.attribute.StaticResourceAttribute;
 import org.robobinding.attribute.ValueModelAttribute;
 
@@ -36,38 +35,34 @@ import android.view.View;
  */
 public class ChildViewAttributes<T extends View>
 {
-	private AbstractViewAttributeInitializer viewAttributeInitializer;
+	private ResolvedGroupAttributes resolvedGroupAttributes;
+	private ViewAttributeInitializer viewAttributeInitializer;
+	private InitializedChildViewAttributesFactory initializedChildViewAttributesFactory;
 	private Map<String, ViewAttribute> childAttributeMap;
 	private boolean failOnFirstBindingError;
-	private GroupAttributes groupAttributes;
 	
-	public ChildViewAttributes(GroupAttributes groupAttributes, AbstractViewAttributeInitializer viewAttributeInitializer)
+	public ChildViewAttributes(ResolvedGroupAttributes resolvedGroupAttributes, ViewAttributeInitializer viewAttributeInitializer,
+			InitializedChildViewAttributesFactory initializedChildViewAttributesFactory)
 	{
-		this.groupAttributes = groupAttributes;
+		this.resolvedGroupAttributes = resolvedGroupAttributes;
 		this.viewAttributeInitializer = viewAttributeInitializer;
+		this.initializedChildViewAttributesFactory = initializedChildViewAttributesFactory;
 		childAttributeMap = newLinkedHashMap();
 		failOnFirstBindingError = false;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <ChildViewAttributeType extends ChildViewAttribute> ChildViewAttributeType add(String attributeName, ChildViewAttributeType childAttribute)
+	public void add(String attributeName, ChildViewAttribute childViewAttribute)
 	{
-		AbstractAttribute attribute = groupAttributes.attributeFor(attributeName);
-		if(childAttribute instanceof ChildViewAttributeWithAttribute<?>)
-		{
-			((ChildViewAttributeWithAttribute<AbstractAttribute>)childAttribute).setAttribute(attribute);
-		}
-		childAttributeMap.put(attributeName, new ViewAttributeAdapter(childAttribute));
-		return childAttribute;
+		AbstractAttribute attribute = resolvedGroupAttributes.attributeFor(attributeName);
+		ViewAttribute viewAttribute = viewAttributeInitializer.initializeChildViewAttribute(childViewAttribute, attribute);
+		childAttributeMap.put(attributeName, viewAttribute);
 	}
 	
-	public <PropertyViewAttributeType extends PropertyViewAttribute<T>> PropertyViewAttributeType add(
-			String propertyAttribute, PropertyViewAttributeType propertyViewAttribute)
+	public void add(String propertyAttribute, PropertyViewAttribute<T> propertyViewAttribute)
 	{
-		ValueModelAttribute attributeValue = groupAttributes.valueModelAttributeFor(propertyAttribute);
-		viewAttributeInitializer.initializePropertyViewAttribute(propertyViewAttribute, attributeValue);
+		ValueModelAttribute attribute = resolvedGroupAttributes.valueModelAttributeFor(propertyAttribute);
+		viewAttributeInitializer.initializePropertyViewAttribute(propertyViewAttribute, attribute);
 		childAttributeMap.put(propertyAttribute, propertyViewAttribute);
-		return propertyViewAttribute;
 	}
 	
 	public void failOnFirstBindingError()
@@ -77,47 +72,26 @@ public class ChildViewAttributes<T extends View>
 	
 	public InitializedChildViewAttributes createInitializedChildViewAttributes()
 	{
-		return failOnFirstBindingError ? InitializedChildViewAttributes.withFailOnFirstError(childAttributeMap) :
-			InitializedChildViewAttributes.withReportAllErrors(childAttributeMap);
+		return initializedChildViewAttributesFactory.create(childAttributeMap, failOnFirstBindingError);
 	}
 
 	public final boolean hasAttribute(String attributeName)
 	{
-		return groupAttributes.hasAttribute(attributeName);
+		return resolvedGroupAttributes.hasAttribute(attributeName);
 	}
 
 	public final ValueModelAttribute valueModelAttributeFor(String attributeName)
 	{
-		return groupAttributes.valueModelAttributeFor(attributeName);
+		return resolvedGroupAttributes.valueModelAttributeFor(attributeName);
 	}
 
 	public final StaticResourceAttribute staticResourceAttributeFor(String attributeName)
 	{
-		return groupAttributes.staticResourceAttributeFor(attributeName);
+		return resolvedGroupAttributes.staticResourceAttributeFor(attributeName);
 	}
 	
 	public final <E extends Enum<E>> EnumAttribute<E> enumAttributeFor(String attributeName)
 	{
-		return groupAttributes.enumAttributeFor(attributeName);
-	}
-	
-	private static class ViewAttributeAdapter implements ViewAttribute
-	{
-		private ChildViewAttribute childViewAttribute;
-		public ViewAttributeAdapter(ChildViewAttribute childViewAttribute)
-		{
-			this.childViewAttribute = childViewAttribute;
-		}
-		
-		@Override
-		public void preInitializeView(BindingContext bindingContext)
-		{
-		}
-		
-		@Override
-		public void bindTo(BindingContext bindingContext)
-		{
-			childViewAttribute.bindTo(bindingContext);
-		}
+		return resolvedGroupAttributes.enumAttributeFor(attributeName);
 	}
 }

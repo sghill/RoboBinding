@@ -176,11 +176,10 @@ public abstract class AbstractGroupedViewAttributeTest<T extends AbstractGrouped
 		}
 		
 		@Override
-		public <ChildViewAttributeType extends ChildViewAttribute> ChildViewAttributeType add(String attributeName, ChildViewAttributeType childAttribute)
+		public void add(String attributeName, ChildViewAttribute childAttribute)
 		{
-			ChildViewAttributeType childViewAttribute = forwarding.add(attributeName, childAttribute);
-			childViewAttributeMappings.put(childViewAttribute.getClass(), childViewAttribute);
-			return childViewAttribute;
+			forwarding.add(attributeName, childAttribute);
+			childViewAttributeMappings.put(childAttribute.getClass(), childAttribute);
 		}
 
 		@Override

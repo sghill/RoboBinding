@@ -37,7 +37,7 @@ import com.google.common.collect.Maps;
  */
 public class ViewAttributeInitializerTest
 {
-	private ViewAttributeInitializer viewAttributeInitializer;
+	private ViewAttributeInitializerWrapper viewAttributeInitializer;
 	private ViewListenersInjector viewListenersProvider;
 	
 	@Before
@@ -66,7 +66,7 @@ public class ViewAttributeInitializerTest
 		return new PendingGroupAttributes(Maps.<String, String>newHashMap());
 	}
 	
-	private static class ViewAttributeInitializerForTest extends ViewAttributeInitializer
+	private static class ViewAttributeInitializerForTest extends ViewAttributeInitializerWrapper
 	{
 		public ViewAttributeInitializerForTest(ViewListenersInjector viewListenersProvider)
 		{

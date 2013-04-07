@@ -20,7 +20,7 @@ import java.util.Map;
 import org.robobinding.BindingContext;
 
 /**
- *
+ * 
  * @since 1.0
  * @version $Revision: 1.0 $
  * @author Robert Taylor
@@ -30,62 +30,51 @@ public class InitializedChildViewAttributes
 	private Map<String, ViewAttribute> childAttributeMap;
 	private boolean failOnFirstBindingError;
 	private AttributeGroupBindingException bindingErrors;
-	
+
 	public static InitializedChildViewAttributes withReportAllErrors(Map<String, ViewAttribute> childAttributeMap)
 	{
 		return new InitializedChildViewAttributes(childAttributeMap, false);
 	}
-	
+
 	public static InitializedChildViewAttributes withFailOnFirstError(Map<String, ViewAttribute> childAttributeMap)
 	{
 		return new InitializedChildViewAttributes(childAttributeMap, true);
 	}
-	
+
 	private InitializedChildViewAttributes(Map<String, ViewAttribute> childAttributeMap, boolean failOnFirstBindingError)
 	{
 		this.childAttributeMap = childAttributeMap;
 		this.failOnFirstBindingError = failOnFirstBindingError;
 		this.bindingErrors = new AttributeGroupBindingException();
 	}
-	
+
 	public void bindTo(BindingContext bindingContext)
 	{
-		for(Map.Entry<String, ViewAttribute> childAttributeEntry : childAttributeMap.entrySet())
+		for (Map.Entry<String, ViewAttribute> childAttributeEntry : childAttributeMap.entrySet())
 		{
 			ViewAttribute childAttribute = childAttributeEntry.getValue();
-			
+
 			try
 			{
 				childAttribute.bindTo(bindingContext);
-			}catch(RuntimeException e)
+			} catch (AttributeBindingException e)
 			{
 				bindingErrors.addChildAttributeError(childAttributeEntry.getKey(), e);
-				
+
 				if (failOnFirstBindingError)
 					break;
 			}
 		}
-		
+
 		bindingErrors.assertNoErrors();
 	}
-	
+
 	public void preInitializeView(BindingContext bindingContext)
 	{
-		for(Map.Entry<String, ViewAttribute> childAttributeEntry : childAttributeMap.entrySet())
+		for (Map.Entry<String, ViewAttribute> childAttributeEntry : childAttributeMap.entrySet())
 		{
 			ViewAttribute childAttribute = childAttributeEntry.getValue();
-			try
-			{
-				childAttribute.preInitializeView(bindingContext);
-			}catch(RuntimeException e)
-			{
-				bindingErrors.addChildAttributeError(childAttributeEntry.getKey(), e);
-				
-				if (failOnFirstBindingError)
-					break;
-			}
+			childAttribute.preInitializeView(bindingContext);
 		}
-		
-		bindingErrors.assertNoErrors();
 	}
 }

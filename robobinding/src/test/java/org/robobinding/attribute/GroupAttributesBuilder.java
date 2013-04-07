@@ -52,9 +52,9 @@ public class GroupAttributesBuilder
 		return this;
 	}
 	
-	public GroupAttributes build()
+	public ResolvedGroupAttributes build()
 	{
-		return new GroupAttributes(createPendingGroupAttributes(), createResolverMappings());
+		return new ResolvedGroupAttributes(createPendingGroupAttributes(), createResolverMappings());
 	}
 
 	private ChildAttributeResolverMappings createResolverMappings()

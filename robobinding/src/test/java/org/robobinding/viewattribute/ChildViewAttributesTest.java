@@ -15,21 +15,21 @@
  */
 package org.robobinding.viewattribute;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.robobinding.attribute.GroupAttributesBuilder.aGroupAttributes;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
 
 import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import org.robobinding.BindingContext;
-import org.robobinding.attribute.CommandAttribute;
-import org.robobinding.attribute.GroupAttributesBuilder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.robobinding.attribute.AbstractAttribute;
+import org.robobinding.attribute.ResolvedGroupAttributes;
 import org.robobinding.attribute.ValueModelAttribute;
 
 import android.view.View;
@@ -40,184 +40,67 @@ import android.view.View;
  * @version $Revision: 1.0 $
  * @author Cheng Wei
  */
-@RunWith(Theories.class)
+@SuppressWarnings("unchecked")
+@RunWith(MockitoJUnitRunner.class)
 public class ChildViewAttributesTest
 {
-	@DataPoints
-	public static AKindOfChildViewAttributes[] childViewAttributeSamples = {
-		new ChildViewAttributeTester(), new ChildViewAttributeWithAttributeTester(), new PropertyViewAttributeTester()
-	};
+	@Mock ResolvedGroupAttributes resolvedGroupAttributes;
+	@Mock ViewAttributeInitializer viewAttributeInitializer;
+	@Mock InitializedChildViewAttributesFactory initializedChildViewAttributesFactory;
+	@InjectMocks ChildViewAttributes<View> childViewAttributes;
 	
-	@Theory()
-	@Test(expected = RuntimeException.class)
-	public void givenSetupCompleted_whenAddAChildViewAttribute_thenThrowsException(AKindOfChildViewAttributes aKindOfChildViewAttributes)
+	@Mock ChildViewAttribute childViewAttribute;
+	@Mock PropertyViewAttribute<View> propertyViewAttribute;
+	@Mock AbstractAttribute attribute;
+	@Mock ValueModelAttribute valueModelAttribute;
+	@Mock ViewAttribute viewAttribute;
+	
+	@Test
+	public void byDefaultDontFailOnFirstError()
 	{
-		ChildViewAttributes<View> childViewAttributes = createChildViewAttributesFrom(aKindOfChildViewAttributes);
-
 		childViewAttributes.createInitializedChildViewAttributes();
 		
-		aKindOfChildViewAttributes.addTo(childViewAttributes);
+		verify(initializedChildViewAttributesFactory).create(anyMap(), eq(false));
 	}
 	
-	private static int childViewAttributeCounter = 0;
-	private static String nextChildViewAttributeName()
+	@Test
+	public void whenFailOnFirstErrorSet_thenInitializeAccordingly()
 	{
-		return "child"+childViewAttributeCounter++;
+		childViewAttributes.failOnFirstBindingError();
+		
+		childViewAttributes.createInitializedChildViewAttributes();
+		
+		verify(initializedChildViewAttributesFactory).create(anyMap(), eq(true));
 	}
 	
-	private ChildViewAttributes<View> createChildViewAttributesFrom(AKindOfChildViewAttributes... childViewAttributeCollection)
+	@Test
+	public void whenAddingChildViewAttribute_thenAddToMap()
 	{
-		GroupAttributesBuilder groupAttributesBuilder = aGroupAttributes();
-		for(AKindOfChildViewAttributes aKindOfChildViewAttributes : childViewAttributeCollection)
-		{
-			aKindOfChildViewAttributes.updateGroupAttributesBuilder(groupAttributesBuilder);
-		}
-		return new ChildViewAttributes<View>(groupAttributesBuilder.build(), new DummyViewAttributeInitializer());
-	}
-
-	private void addToChildViewAttributes(ChildViewAttributes<View> childViewAttributes, AKindOfChildViewAttributes[] childViewAttributeCollection)
-	{
-		for(AKindOfChildViewAttributes aKindOfChildViewAttributes : childViewAttributeCollection)
-		{
-			aKindOfChildViewAttributes.addTo(childViewAttributes);
-		}
-	}
-
-	private static class DummyViewAttributeInitializer extends AbstractViewAttributeInitializer
-	{
-
-		protected DummyViewAttributeInitializer()
-		{
-			super(mock(ViewListenersInjector.class));
-		}
-
-		@Override
-		protected View getView()
-		{
-			return null;
-		}
-
-		@Override
-		public <ViewType extends View, PropertyViewAttributeType extends PropertyViewAttribute<ViewType>> PropertyViewAttributeType initializePropertyViewAttribute(
-				PropertyViewAttributeType propertyViewAttribute, ValueModelAttribute attribute)
-		{
-			return propertyViewAttribute;
-		}
-
-		@Override
-		public <ViewType extends View, CommandViewAttributeType extends AbstractCommandViewAttribute<ViewType>> CommandViewAttributeType initializeCommandViewAttribute(
-				CommandViewAttributeType viewAttribute, CommandAttribute attribute)
-		{
-			return viewAttribute;
-		}
+		when(resolvedGroupAttributes.attributeFor("attributeName")).thenReturn(attribute);
+		when(viewAttributeInitializer.initializeChildViewAttribute(childViewAttribute, attribute)).thenReturn(viewAttribute);
+		childViewAttributes.add("attributeName", childViewAttribute);
 		
+		childViewAttributes.createInitializedChildViewAttributes();
+		
+		verify(initializedChildViewAttributesFactory).create(linkedHashMapWith("attributeName", viewAttribute), false);
 	}
 	
-	private static interface AKindOfChildViewAttributes
+	@Test
+	public void whenAddingPropertyViewAttribute_thenAddToMap()
 	{
-		void updateGroupAttributesBuilder(GroupAttributesBuilder groupAttributesBuilder);
-		void addTo(ChildViewAttributes<View> childViewAttributes);
-		void verifyNumCallsToBindTo(int expectedNumCalls);
+		when(resolvedGroupAttributes.valueModelAttributeFor("attributeName")).thenReturn(valueModelAttribute);
+		when(viewAttributeInitializer.initializePropertyViewAttribute(propertyViewAttribute, valueModelAttribute)).thenReturn(propertyViewAttribute);
+		childViewAttributes.add("attributeName", propertyViewAttribute);
+		
+		childViewAttributes.createInitializedChildViewAttributes();
+		
+		verify(initializedChildViewAttributesFactory).create(linkedHashMapWith("attributeName", propertyViewAttribute), false);
 	}
 	
-	private static class ChildViewAttributeTester implements AKindOfChildViewAttributes
+	private Map<String, ViewAttribute> linkedHashMapWith(String attributeName, ViewAttribute viewAttribute)
 	{
-		private ChildViewAttribute childViewAttribute;
-		
-		public ChildViewAttributeTester()
-		{
-			childViewAttribute = mock(ChildViewAttribute.class);
-		}		
-
-		@Override
-		public void updateGroupAttributesBuilder(GroupAttributesBuilder groupAttributesBuilder)
-		{
-		}
-		
-		@Override
-		public void addTo(ChildViewAttributes<View> childViewAttributes)
-		{
-			childViewAttributes.add(nextChildViewAttributeName(), childViewAttribute);
-		}
-
-		@Override
-		public void verifyNumCallsToBindTo(int expectedNumCalls)
-		{
-			verify(childViewAttribute, times(expectedNumCalls)).bindTo(any(BindingContext.class));
-		}
-	}
-	
-	private static class ChildViewAttributeWithAttributeTester implements AKindOfChildViewAttributes
-	{
-		private ChildViewAttributeWithAttribute<ValueModelAttribute> childViewAttribute;
-		private ValueModelAttribute attribute;
-
-		@SuppressWarnings("unchecked")
-		public ChildViewAttributeWithAttributeTester()
-		{
-			childViewAttribute = mock(ChildViewAttributeWithAttribute.class);
-			attribute = new ValueModelAttribute(nextChildViewAttributeName(), "value");
-		}
-		
-		@Override
-		public void updateGroupAttributesBuilder(GroupAttributesBuilder groupAttributesBuilder)
-		{
-			groupAttributesBuilder.withChildAttributeResolution(attribute);
-		}
-		
-		@Override
-		public void addTo(ChildViewAttributes<View> childViewAttributes)
-		{
-			childViewAttributes.add(attribute.getName(), childViewAttribute);
-		}
-		
-		@Override
-		public void verifyNumCallsToBindTo(int expectedNumCalls)
-		{
-			verify(childViewAttribute, times(expectedNumCalls)).bindTo(any(BindingContext.class));
-		}
-	}
-	
-	private static class PropertyViewAttributeTester implements AKindOfChildViewAttributes
-	{
-		private PropertyViewAttribute<View> childViewAttribute;
-		
-		@SuppressWarnings("unchecked")
-		public PropertyViewAttributeTester()
-		{
-			childViewAttribute = mock(PropertyViewAttribute.class);
-		}
-
-		@Override
-		public void updateGroupAttributesBuilder(GroupAttributesBuilder groupAttributesBuilder)
-		{
-		}
-
-		@Override
-		public void addTo(ChildViewAttributes<View> childViewAttributes)
-		{
-			childViewAttributes.add(nextChildViewAttributeName(), childViewAttribute);
-		}
-
-		public void throwsExceptionWhenPreInitializeView()
-		{
-			doThrow(new RuntimeException("an error")).when(childViewAttribute).preInitializeView(any(BindingContext.class));
-		}
-		
-		public void throwsExceptionWhenBindTo()
-		{
-			doThrow(new RuntimeException("an error")).when(childViewAttribute).bindTo(any(BindingContext.class));
-		}
-		
-		public void verifyNumCallsToPreInitializeView(int expectedNumCalls)
-		{
-			verify(childViewAttribute, times(expectedNumCalls)).preInitializeView(any(BindingContext.class));
-		}
-
-		@Override
-		public void verifyNumCallsToBindTo(int expectedNumCalls)
-		{
-			verify(childViewAttribute, times(expectedNumCalls)).bindTo(any(BindingContext.class));
-		}
+		Map<String, ViewAttribute> map = newLinkedHashMap();
+		map.put("attributeName", viewAttribute);
+		return map;
 	}
 }

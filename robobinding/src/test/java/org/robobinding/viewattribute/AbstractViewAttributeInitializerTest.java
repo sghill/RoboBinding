@@ -31,6 +31,7 @@ import org.robobinding.attribute.Command;
 import org.robobinding.attribute.CommandAttribute;
 import org.robobinding.attribute.ValueModelAttribute;
 import org.robobinding.property.ValueModel;
+import org.robobinding.viewattribute.impl.ViewAttributeInitializerWrapper;
 import org.robobinding.viewattribute.view.ViewListeners;
 import org.robobinding.viewattribute.view.ViewListenersAware;
 
@@ -44,7 +45,7 @@ import android.view.View;
  */
 public class AbstractViewAttributeInitializerTest
 {
-	private AbstractViewAttributeInitializer viewAttributeInitializer;
+	private ViewAttributeInitializer viewAttributeInitializer;
 	private View view;
 	private ViewListenersInjector viewListenersInjector;
 	private ViewListeners viewListeners;
@@ -67,7 +68,7 @@ public class AbstractViewAttributeInitializerTest
 				}
 				return null;
 			}}).when(viewListenersInjector).injectIfRequired(any(ViewAttribute.class), eq(view));
-		viewAttributeInitializer = new ViewAttributeInitializerForTest(viewListenersInjector);
+		viewAttributeInitializer = new ViewAttributeInitializer(viewListenersInjector, view);
 	}
 	
 	@Test
@@ -129,20 +130,6 @@ public class AbstractViewAttributeInitializerTest
 		viewAttribute = viewAttributeInitializer.initializeCommandViewAttribute(viewAttribute, attribute);
 		
 		verify(viewAttribute).setViewListeners(viewListeners);
-	}
-	
-	public class ViewAttributeInitializerForTest extends AbstractViewAttributeInitializer
-	{
-		public ViewAttributeInitializerForTest(ViewListenersInjector viewListenersInjector)
-		{
-			super(viewListenersInjector);
-		}
-		
-		@Override
-		protected View getView()
-		{
-			return view;
-		}
 	}
 	
 	public static class MockViewListenersAwarePropertyViewAttribute extends AbstractPropertyViewAttribute<View, Object> implements ViewListenersAware<ViewListeners>

@@ -15,6 +15,8 @@
  */
 package org.robobinding.viewattribute;
 
+import org.robobinding.BindingContext;
+import org.robobinding.attribute.AbstractAttribute;
 import org.robobinding.attribute.CommandAttribute;
 import org.robobinding.attribute.ValueModelAttribute;
 
@@ -27,15 +29,22 @@ import android.view.View;
  * @author Robert Taylor
  * @author Cheng Wei
  */
-public abstract class AbstractViewAttributeInitializer
+public class ViewAttributeInitializer
 {
-	protected final ViewListenersInjector viewListenersInjector;
-
-	protected AbstractViewAttributeInitializer(ViewListenersInjector viewListenersInjector)
+	private final ViewListenersInjector viewListenersInjector;
+	private View view;
+	
+	public ViewAttributeInitializer(ViewListenersInjector viewListenersInjector)
 	{
 		this.viewListenersInjector = viewListenersInjector;
 	}
 	
+	public ViewAttributeInitializer(ViewListenersInjector viewListenersInjector, View view)
+	{
+		this(viewListenersInjector);
+		this.view = view;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <ViewType extends View, PropertyViewAttributeType extends PropertyViewAttribute<ViewType>> PropertyViewAttributeType initializePropertyViewAttribute(
 			PropertyViewAttributeType propertyViewAttribute, ValueModelAttribute attribute)
@@ -75,10 +84,48 @@ public abstract class AbstractViewAttributeInitializer
 		return viewAttribute;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public ViewAttribute initializeChildViewAttribute(ChildViewAttribute childViewAttribute, AbstractAttribute attribute)
+	{
+		if(childViewAttribute instanceof ChildViewAttributeWithAttribute<?>)
+		{
+			((ChildViewAttributeWithAttribute<AbstractAttribute>)childViewAttribute).setAttribute(attribute);
+		}
+		return new ChildViewAttributeAdapter(childViewAttribute);
+	}
+	
 	private void setViewListenersIfRequired(ViewAttribute viewAttribute)
 	{
 		viewListenersInjector.injectIfRequired(viewAttribute, getView());
 	}
 	
-	protected abstract View getView();
+	protected View getView() 
+	{
+		return view;
+	}
+	
+	public void setView(View view) 
+	{
+		this.view = view;
+	}
+
+	private static class ChildViewAttributeAdapter implements ViewAttribute
+	{
+		private ChildViewAttribute childViewAttribute;
+		public ChildViewAttributeAdapter(ChildViewAttribute childViewAttribute)
+		{
+			this.childViewAttribute = childViewAttribute;
+		}
+		
+		@Override
+		public void bindTo(BindingContext bindingContext)
+		{
+			childViewAttribute.bindTo(bindingContext);
+		}
+		
+		@Override
+		public void preInitializeView(BindingContext bindingContext)
+		{
+		}
+	}
 }

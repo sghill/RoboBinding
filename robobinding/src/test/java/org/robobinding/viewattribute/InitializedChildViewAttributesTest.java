@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.robobinding.BindingContext;
+import org.robobinding.attribute.MalformedAttributeException;
 
 /**
  * 
@@ -84,8 +85,8 @@ public class InitializedChildViewAttributesTest
 	@Test
 	public void whenErrorsOccurDuringBinding_thenAllErrorsAreReported()
 	{
-		doThrow(new RuntimeException()).when(viewAttribute1).bindTo(bindingContext);
-		doThrow(new RuntimeException()).when(viewAttribute2).bindTo(bindingContext);
+		throwAttributeBindingExceptionWhenBinding(viewAttribute1);
+		throwAttributeBindingExceptionWhenBinding(viewAttribute2);
 		
 		thrownException.expect(AttributeGroupBindingException.class);
 		thrownException.expect(hasChildAttributeError(viewAttributeName1));
@@ -97,40 +98,26 @@ public class InitializedChildViewAttributesTest
 	@Test
 	public void whenErrorsOccurDuringBindingWithFailOnFirstBindingError_thenOnlyTheFirstErrorIsReported()
 	{
-		doThrow(new RuntimeException()).when(viewAttribute1).bindTo(bindingContext);
-
-		thrownException.expect(AttributeGroupBindingException.class);
-		thrownException.expect(hasChildAttributeError(viewAttributeName1));
-		thrownException.expect(not(hasChildAttributeError(viewAttributeName1)));
-
-		childViewAttributesWithFailOnFirstError.bindTo(bindingContext);
-	}
-	
-	@Test
-	public void whenErrorsOccurDuringPreInitializingView_thenAllErrorsAreReported()
-	{
-		doThrow(new RuntimeException()).when(viewAttribute1).preInitializeView(bindingContext);
-		doThrow(new RuntimeException()).when(viewAttribute2).preInitializeView(bindingContext);
-		
-		thrownException.expect(AttributeGroupBindingException.class);
-		thrownException.expect(hasChildAttributeError(viewAttributeName1));
-		thrownException.expect(hasChildAttributeError(viewAttributeName2));
-		
-		childViewAttributes.preInitializeView(bindingContext);
-	}
-
-	@Test
-	public void whenErrorsOccurDuringPreInitializingViewWithFailOnFirstBindingError_thenOnlyTheFirstErrorIsReported()
-	{
-		doThrow(new RuntimeException()).when(viewAttribute1).preInitializeView(bindingContext);
+		throwAttributeBindingExceptionWhenBinding(viewAttribute1);
+		throwAttributeBindingExceptionWhenBinding(viewAttribute2);
 
 		thrownException.expect(AttributeGroupBindingException.class);
 		thrownException.expect(hasChildAttributeError(viewAttributeName1));
 		thrownException.expect(not(hasChildAttributeError(viewAttributeName2)));
 
-		childViewAttributesWithFailOnFirstError.preInitializeView(bindingContext);
+		childViewAttributesWithFailOnFirstError.bindTo(bindingContext);
 	}
 
+	@Test
+	public void whenAProgrammingErrorOccursDuringBinding_thenRethrow()
+	{
+		doThrow(new ProgrammingError()).when(viewAttribute1).bindTo(bindingContext);
+		
+		thrownException.expect(ProgrammingError.class);
+		
+		childViewAttributes.bindTo(bindingContext);
+	}
+	
 	static class AttributeGroupBindingExceptionMatcher extends TypeSafeMatcher<AttributeGroupBindingException>
 	{
 		public static AttributeGroupBindingExceptionMatcher hasChildAttributeError(String attributeName)
@@ -160,5 +147,14 @@ public class InitializedChildViewAttributesTest
 		{
 			description.appendText("Error for attribute '").appendValue(attributeName).appendText("' was not thrown.");
 		}
+	}
+	
+	@SuppressWarnings("serial")
+	private static class ProgrammingError extends RuntimeException {
+	}
+	
+	private void throwAttributeBindingExceptionWhenBinding(ViewAttribute viewAttribute)
+	{
+		doThrow(new AttributeBindingException("", new MalformedAttributeException("", ""))).when(viewAttribute).bindTo(bindingContext);
 	}
 }

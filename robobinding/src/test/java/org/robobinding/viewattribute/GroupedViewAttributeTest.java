@@ -104,7 +104,7 @@ public class GroupedViewAttributeTest extends ViewAttributeContractTest<Abstract
 		public GroupedViewAttributeForTest()
 		{
 			childViewAttributes = new ChildViewAttributes<View>(aGroupAttributes().build(), 
-					mock(AbstractViewAttributeInitializer.class));
+					mock(ViewAttributeInitializer.class));
 		}
 	}
 	

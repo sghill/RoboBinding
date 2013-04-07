@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
  * @author Cheng Wei
  */
 @RunWith(Theories.class)
-public class GroupAttributesTest
+public class ResolvedGroupAttributesTest
 {
 	@DataPoints
 	public static ChildAttributeExpectation[] childAttributeExpectations = {
@@ -51,7 +51,7 @@ public class GroupAttributesTest
 	public void givenChildAttribute_whenAskForAttribute_thenReturnAttributeOfCorrectType(ChildAttributeExpectation childAttributeExpectation)
 	{
 		String attributeName = childAttributeExpectation.attributeName();
-		GroupAttributes groupedAttribute = aGroupAttributes()
+		ResolvedGroupAttributes groupedAttribute = aGroupAttributes()
 				.withChildAttributeResolution(childAttributeExpectation.attribute)
 				.build();
 		
@@ -64,7 +64,7 @@ public class GroupAttributesTest
 	public void givenChildAttribute_whenAskForAttributeOfIncorrectType_thenThrowException()
 	{
 		CommandAttribute commandAttribute = aCommandAttribute("commandName");
-		GroupAttributes groupedAttribute = aGroupAttributes()
+		ResolvedGroupAttributes groupedAttribute = aGroupAttributes()
 				.withChildAttributeResolution(commandAttribute)
 					.build();
 		
