@@ -34,7 +34,7 @@ public abstract class AbstractGroupedViewAttribute<T extends View> implements Vi
 	private static final String[] NO_COMPULSORY_ATTRIBUTES = new String[0];
 	
 	protected T view;
-	private ChildViewAttributes<T> childViewAttributes;
+	ChildViewAttributes<T> childViewAttributes;
 	private InitializedChildViewAttributes initializedChildViewAttributes;
 	
 	public void initialize(GroupedViewAttributeConfig<T> config)

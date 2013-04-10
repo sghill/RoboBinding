@@ -35,7 +35,7 @@ import com.google.common.collect.Maps;
  * @version $Revision: 1.0 $
  * @author Cheng Wei
  */
-public class ViewAttributeInitializerTest
+public class ViewAttributeInitializerWrapperTest
 {
 	private ViewAttributeInitializerWrapper viewAttributeInitializer;
 	private ViewListenersInjector viewListenersProvider;

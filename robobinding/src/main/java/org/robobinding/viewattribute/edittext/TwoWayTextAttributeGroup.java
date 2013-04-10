@@ -54,20 +54,20 @@ public class TwoWayTextAttributeGroup extends AbstractGroupedViewAttribute<EditT
 	}
 	
 	@Override
-	public void validateResolvedChildAttributes(ResolvedGroupAttributes groupAttributes) 
+	public void validateResolvedChildAttributes(ResolvedGroupAttributes resolvedGroupAttributes) 
 	{
-		if (valueCommitModeSpecified(groupAttributes) && isTextAttributeNotTwoWayBinding(groupAttributes))
+		if (valueCommitModeSpecified(resolvedGroupAttributes) && isTextAttributeNotTwoWayBinding(resolvedGroupAttributes))
 			throw new MalformedAttributeException(VALUE_COMMIT_MODE, "The valueCommitMode attribute can only be used when a two-way binding text attribute is specified");
 	}
 	
-	private boolean valueCommitModeSpecified(ResolvedGroupAttributes groupAttributes)
+	private boolean valueCommitModeSpecified(ResolvedGroupAttributes resolvedGroupAttributes)
 	{
-		return groupAttributes.hasAttribute(VALUE_COMMIT_MODE);
+		return resolvedGroupAttributes.hasAttribute(VALUE_COMMIT_MODE);
 	}
 
-	private boolean isTextAttributeNotTwoWayBinding(ResolvedGroupAttributes groupAttributes)
+	private boolean isTextAttributeNotTwoWayBinding(ResolvedGroupAttributes resolvedGroupAttributes)
 	{
-		ValueModelAttribute textAttribute = groupAttributes.valueModelAttributeFor(TEXT);
+		ValueModelAttribute textAttribute = resolvedGroupAttributes.valueModelAttributeFor(TEXT);
 		return !textAttribute.isTwoWayBinding();
 	}
 

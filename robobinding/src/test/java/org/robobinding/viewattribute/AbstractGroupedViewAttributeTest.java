@@ -38,7 +38,6 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
  * @since 1.0
  * @version $Revision: 1.0 $
  * @author Robert Taylor
- * @param <S>
  */
 @RunWith(RobolectricTestRunner.class)
 public abstract class AbstractGroupedViewAttributeTest<T extends AbstractGroupedViewAttribute<?>>
@@ -171,7 +170,7 @@ public abstract class AbstractGroupedViewAttributeTest<T extends AbstractGrouped
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public ChildViewAttributesWrapperForTest(ChildViewAttributes<?> target)
 		{
-			super(null, null);
+			super(target.resolvedGroupAttributes, null, null);
 			this.forwarding = (ChildViewAttributes)target;
 		}
 		
@@ -183,12 +182,10 @@ public abstract class AbstractGroupedViewAttributeTest<T extends AbstractGrouped
 		}
 
 		@Override
-		public <PropertyViewAttributeType extends PropertyViewAttribute<View>> PropertyViewAttributeType add(String propertyAttribute,
-				PropertyViewAttributeType propertyViewAttribute)
+		public void add(String propertyAttribute, PropertyViewAttribute<View> propertyViewAttribute)
 		{
-			PropertyViewAttributeType childViewAttribute = forwarding.add(propertyAttribute, propertyViewAttribute);
-			childViewAttributeMappings.put(childViewAttribute.getClass(), childViewAttribute);
-			return childViewAttribute;
+			forwarding.add(propertyAttribute, propertyViewAttribute);
+			childViewAttributeMappings.put(propertyViewAttribute.getClass(), propertyViewAttribute);
 		}
 		
 		public Object findChildAttributeOfType(Class<?> childViewAttributeClass)

@@ -62,7 +62,7 @@ public class ViewAttributeInitializerWrapper
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public AbstractGroupedViewAttribute<? extends View> initializeGroupedViewAttribute(
+	public AbstractGroupedViewAttribute<View> initializeGroupedViewAttribute(
 			View view, AbstractGroupedViewAttribute groupedViewAttribute, PendingGroupAttributes pendingGroupAttributes)
 	{
 		groupedViewAttribute.initialize(new GroupedViewAttributeConfig(view, pendingGroupAttributes, viewListenersInjector));

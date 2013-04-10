@@ -35,7 +35,7 @@ import android.view.View;
  */
 public class ChildViewAttributes<T extends View>
 {
-	private ResolvedGroupAttributes resolvedGroupAttributes;
+	ResolvedGroupAttributes resolvedGroupAttributes;
 	private ViewAttributeInitializer viewAttributeInitializer;
 	private InitializedChildViewAttributesFactory initializedChildViewAttributesFactory;
 	private Map<String, ViewAttribute> childAttributeMap;
