@@ -19,11 +19,10 @@ import static org.robobinding.attribute.ChildAttributeResolvers.staticResourceAt
 import static org.robobinding.attribute.ChildAttributeResolvers.valueModelAttributeResolver;
 
 import org.robobinding.BindingContext;
-import org.robobinding.ViewBinder;
+import org.robobinding.ViewBinderWrapper;
 import org.robobinding.attribute.ChildAttributeResolverMappings;
 import org.robobinding.attribute.StaticResourceAttribute;
 import org.robobinding.attribute.ValueModelAttribute;
-import org.robobinding.property.ValueModel;
 import org.robobinding.viewattribute.AbstractGroupedViewAttribute;
 import org.robobinding.viewattribute.ChildViewAttribute;
 import org.robobinding.viewattribute.ChildViewAttributeWithAttribute;
@@ -104,16 +103,24 @@ public class SubViewAttributes<T extends AdapterView<?>> extends AbstractGrouped
 		@Override
 		public void bindTo(BindingContext bindingContext)
 		{
-			ViewBinder viewBinder = bindingContext.createViewBinder();
-			subView = viewBinder.inflateAndBind(layoutId, getPresentationModel(bindingContext));
+			ViewBinderWrapper viewBinder = bindingContext.createViewBinder();
+			subView = viewBinder.inflateAndBind(layoutId, attribute.getPropertyName());
 			subViewAttributesStrategy.addSubView(view, subView, bindingContext.getContext());
 		}
-
-		private Object getPresentationModel(BindingContext bindingContext)
-		{
-			ValueModel<Object> valueModel = bindingContext.getReadOnlyPropertyValueModel(attribute.getPropertyName());
-			return valueModel.getValue();
-		}
+//		
+//		@Override
+//		public void bindTo(BindingContext bindingContext)
+//		{
+//			ViewBinder viewBinder = bindingContext.createViewBinder();
+//			subView = viewBinder.inflateAndBind(layoutId, getPresentationModel(bindingContext));
+//			subViewAttributesStrategy.addSubView(view, subView, bindingContext.getContext());
+//		}
+//
+//		private Object getPresentationModel(BindingContext bindingContext)
+//		{
+//			ValueModel<Object> valueModel = bindingContext.getReadOnlyPropertyValueModel(attribute.getPropertyName());
+//			return valueModel.getValue();
+//		}
 		
 		@Override
 		public void setAttribute(ValueModelAttribute attribute)
@@ -127,10 +134,18 @@ public class SubViewAttributes<T extends AdapterView<?>> extends AbstractGrouped
 		@Override
 		public void bindTo(BindingContext bindingContext)
 		{
-			ViewBinder viewBinder = bindingContext.createViewBinder();
+			ViewBinderWrapper viewBinder = bindingContext.createViewBinder();
 			subView = viewBinder.inflate(layoutId);
 			subViewAttributesStrategy.addSubView(view, subView, bindingContext.getContext());
 		}
+		
+//		@Override
+//		public void bindTo(BindingContext bindingContext)
+//		{
+//			ViewBinder viewBinder = bindingContext.createViewBinder();
+//			subView = viewBinder.inflate(layoutId);
+//			subViewAttributesStrategy.addSubView(view, subView, bindingContext.getContext());
+//		}
 	}
 
 	private String visibilityAttribute()

@@ -54,9 +54,10 @@ public class BindingContext implements PresentationModelAdapter
 		return new ItemBinder(factory.create());
 	}
 
-	public ViewBinder createViewBinder()
+	public ViewBinderWrapper createViewBinder()
 	{
-		return new ViewBinder(factory.create());
+		ViewBinder viewBinder = new ViewBinder(factory.create());
+		return new ViewBinderWrapper(viewBinder, this);
 	}
 
 	public boolean shouldPreInitializeViews()
