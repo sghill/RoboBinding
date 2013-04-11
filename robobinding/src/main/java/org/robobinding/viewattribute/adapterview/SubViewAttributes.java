@@ -19,9 +19,11 @@ import static org.robobinding.attribute.ChildAttributeResolvers.staticResourceAt
 import static org.robobinding.attribute.ChildAttributeResolvers.valueModelAttributeResolver;
 
 import org.robobinding.BindingContext;
+import org.robobinding.ViewBinder;
 import org.robobinding.attribute.ChildAttributeResolverMappings;
 import org.robobinding.attribute.StaticResourceAttribute;
 import org.robobinding.attribute.ValueModelAttribute;
+import org.robobinding.property.ValueModel;
 import org.robobinding.viewattribute.AbstractGroupedViewAttribute;
 import org.robobinding.viewattribute.ChildViewAttribute;
 import org.robobinding.viewattribute.ChildViewAttributeWithAttribute;
@@ -40,13 +42,11 @@ public class SubViewAttributes<T extends AdapterView<?>> extends AbstractGrouped
 {
 	private View subView;
 	private SubViewAttributesStrategy<T> subViewAttributesStrategy;
-	private SubViewCreator subViewCreator;
 	private int layoutId;
 
-	public SubViewAttributes(SubViewAttributesStrategy<T> subViewAttributesStrategy, SubViewCreator subViewCreator)
+	public SubViewAttributes(SubViewAttributesStrategy<T> subViewAttributesStrategy)
 	{
 		this.subViewAttributesStrategy = subViewAttributesStrategy;
-		this.subViewCreator = subViewCreator;
 	}
 
 	@Override
@@ -104,8 +104,15 @@ public class SubViewAttributes<T extends AdapterView<?>> extends AbstractGrouped
 		@Override
 		public void bindTo(BindingContext bindingContext)
 		{
-			subView = subViewCreator.createAndBindTo(attribute, layoutId, bindingContext);
+			ViewBinder viewBinder = bindingContext.createViewBinder();
+			subView = viewBinder.inflateAndBind(layoutId, getPresentationModel(bindingContext));
 			subViewAttributesStrategy.addSubView(view, subView, bindingContext.getContext());
+		}
+
+		private Object getPresentationModel(BindingContext bindingContext)
+		{
+			ValueModel<Object> valueModel = bindingContext.getReadOnlyPropertyValueModel(attribute.getPropertyName());
+			return valueModel.getValue();
 		}
 		
 		@Override
@@ -120,7 +127,8 @@ public class SubViewAttributes<T extends AdapterView<?>> extends AbstractGrouped
 		@Override
 		public void bindTo(BindingContext bindingContext)
 		{
-			subView = subViewCreator.create(layoutId, bindingContext);
+			ViewBinder viewBinder = bindingContext.createViewBinder();
+			subView = viewBinder.inflate(layoutId);
 			subViewAttributesStrategy.addSubView(view, subView, bindingContext.getContext());
 		}
 	}
